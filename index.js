@@ -24,7 +24,6 @@ login({ appState: require("./appstate.json") }, async (err, api) => {
 
   const commands = {};
 
-  // Load command modules
   fs.readdirSync(path.join(__dirname, "commands")).forEach(file => {
     if (file.endsWith(".js")) {
       const cmd = require(`./commands/${file}`);
