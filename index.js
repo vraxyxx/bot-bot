@@ -1,35 +1,37 @@
-const login = require("./ws3-fca");
+const login = require("ws3-fca");
 const fs = require("fs-extra");
 const path = require("path");
-const config = require("./config");
 
-const prefix = config.prefix;
-const commands = new Map();
+login({ appState: require("./appstate.json") }, async (err, api) => {
+  if (err) return console.error("Login Failed:", err);
 
-const commandFiles = fs.readdirSync(path.join(__dirname, "commands"));
-for (const file of commandFiles) {
-  const command = require(`./commands/${file}`);
-  commands.set(command.name, command);
-}
+  api.setOptions({
+    listenEvents: true,
+    selfListen: false,
+    forceLogin: true
+  });
 
-const appState = require("./appstate.json");
+  console.log("🤖 Bot is now active!");
 
-login({ appState }, (err, api) => {
-  if (err) return console.error("❌ Login failed:", err);
-  console.log("✅ Bot is now running!");
+  const commands = {};
 
-  api.setOptions({ listenEvents: true });
+  // Load commands
+  fs.readdirSync(__dirname + "/commands").forEach(file => {
+    if (file.endsWith(".js")) {
+      const cmd = require(`./commands/${file}`);
+      commands[cmd.config.name] = cmd;
+    }
+  });
 
+  // Listen to messages
   api.listenMqtt((err, event) => {
-    if (err || event.type !== "message" || !event.body) return;
+    if (err || !event.body) return;
 
-    if (!event.body.startsWith(prefix)) return;
-    const args = event.body.slice(prefix.length).trim().split(/\s+/);
-    const cmd = args.shift().toLowerCase();
+    const args = event.body.split(" ");
+    const commandName = args[0].toLowerCase();
 
-    if (commands.has(cmd)) {
-      const command = commands.get(cmd);
-      command.run({ api, event, args });
+    if (commands[commandName]) {
+      commands[commandName].run({ api, event, args });
     }
   });
 });
