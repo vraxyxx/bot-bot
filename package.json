@@ -1,11 +1,11 @@
 {
-  "name": "my-ws3-bot",
+  "name": "bot-bot",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {
-    "start": "node index.js"
-  },
   "dependencies": {
-    "fs-extra": "^11.1.1"
+    "axios": "^1.6.0",
+    "chalk": "^5.3.0",
+    "fs-extra": "^11.1.1",
+    "ws3-fca": "^1.0.0"
   }
 }
