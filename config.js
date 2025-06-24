@@ -1,4 +1,4 @@
 module.exports = {
   prefix: "!",
-  admin: ["100000000000000"] // Replace with your Facebook UID
+  admin: ["61576677958957"] // Replace with your Facebook UID
 };
